@@ -84,11 +84,7 @@ class Https implements MiddlewareInterface
         $uri = $request->getUri();
 
         if (strtolower($uri->getScheme()) !== 'https') {
-            if (!$this->checkHttpsForward ||
-                (
-                    $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
-                    $request->getHeaderLine('X-Forwarded-Port') !== '443'
-                )) {
+            if ($this->mustRedirect($request)) {
                 return Utils\Factory::createResponse(301)
                     ->withHeader('Location', (string) self::withHttps($uri));
             }
@@ -113,6 +109,21 @@ class Https implements MiddlewareInterface
         }
 
         return $response;
+    }
+
+    /**
+     * Check whether the request must be redirected or not.
+     *
+     * @param RequestInterface $request
+     *
+     * @return bool
+     */
+    private function mustRedirect(RequestInterface $request)
+    {
+        return !$this->checkHttpsForward || (
+            $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
+            $request->getHeaderLine('X-Forwarded-Port') !== '443'
+        );
     }
 
     /**
