@@ -22,7 +22,7 @@ class Https implements MiddlewareInterface
     private $includeSubdomains = false;
 
     /**
-     * @param bool Whether check the headers "HTTP_X_FORWARDED_PROTO: https" or "HTTP_X_FORWARDED_PORT: 443"
+     * @param bool Whether check the headers "X-Forwarded-Proto: https" or "X-Forwarded-Port: 443"
      */
     private $checkHttpsForward = false;
 
@@ -56,8 +56,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Configure whether check the following headers before redirect:
-     * HTTP_X_FORWARDED_PROTO: https
-     * HTTP_X_FORWARDED_PORT: 443.
+     * X-Forwarded-Proto: https
+     * X-Forwarded-Port: 443
      *
      * @param bool $checkHttpsForward
      *
@@ -87,8 +87,8 @@ class Https implements MiddlewareInterface
 
             if (!$this->checkHttpsForward ||
                 (
-                    $request->getHeaderLine('HTTP_X_FORWARDED_PROTO') !== 'https' &&
-                    $request->getHeaderLine('HTTP_X_FORWARDED_PORT') !== '443'
+                    $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
+                    $request->getHeaderLine('X-Forwarded-Port') !== '443'
                 )) {
                 return Utils\Factory::createResponse(301)
                     ->withHeader('Location', (string) $uri);

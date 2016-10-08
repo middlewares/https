@@ -50,7 +50,7 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     public function testCheckHttpsForward()
     {
         $request = (new Request('http://domain.com:80'))
-            ->withHeader('HTTP_X_FORWARDED_PROTO', 'https');
+            ->withHeader('X-Forwarded-Proto', 'https');
 
         $response = (new Dispatcher([
             (new Https())
