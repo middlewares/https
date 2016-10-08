@@ -4,6 +4,7 @@ namespace Middlewares;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\UriInterface;
 use Interop\Http\Middleware\MiddlewareInterface;
 use Interop\Http\Middleware\DelegateInterface;
 
@@ -57,7 +58,7 @@ class Https implements MiddlewareInterface
     /**
      * Configure whether check the following headers before redirect:
      * X-Forwarded-Proto: https
-     * X-Forwarded-Port: 443
+     * X-Forwarded-Port: 443.
      *
      * @param bool $checkHttpsForward
      *
@@ -83,18 +84,16 @@ class Https implements MiddlewareInterface
         $uri = $request->getUri();
 
         if (strtolower($uri->getScheme()) !== 'https') {
-            $uri = $uri->withScheme('https')->withPort(443);
-
             if (!$this->checkHttpsForward ||
                 (
                     $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
                     $request->getHeaderLine('X-Forwarded-Port') !== '443'
                 )) {
                 return Utils\Factory::createResponse(301)
-                    ->withHeader('Location', (string) $uri);
+                    ->withHeader('Location', (string) self::withHttps($uri));
             }
 
-            $request = $request->withUri($uri);
+            $request = $request->withUri(self::withHttps($uri));
         }
 
         $response = $delegate->process($request);
@@ -109,12 +108,22 @@ class Https implements MiddlewareInterface
             $location = Utils\Factory::createUri($response->getHeaderLine('Location'));
 
             if ($location->getHost() === '' || $location->getHost() === $uri->getHost()) {
-                $location = $location->withScheme('https')->withPort(443);
-
-                return $response->withHeader('Location', (string) $location);
+                return $response->withHeader('Location', (string) self::withHttps($location));
             }
         }
 
         return $response;
+    }
+
+    /**
+     * Converts a http uri to https.
+     *
+     * @param UriInterface $uri
+     *
+     * @return UriInterface
+     */
+    private static function withHttps(UriInterface $uri)
+    {
+        return $uri->withScheme('https')->withPort(443);
     }
 }
