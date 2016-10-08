@@ -46,7 +46,7 @@ Set `true` to add the `includeSubDomains` attribute to the `Strict-Transport-Sec
 
 #### `checkHttpsForward(bool $checkHttpsForward = true)`
 
-If it's `true` and the request contains the headers `HTTP_X_FORWARDED_PROTO: https` or `HTTP_X_FORWARDED_PORT: 443`, no redirection is returned. This prevent problems with Https load balancer.
+If it's `true` and the request contains the headers `X-Forwarded-Proto: https` or `X-Forwarded-Port: 443`, no redirection is returned. This prevent problems with Https load balancer.
 
 ---
 
@@ -59,10 +59,10 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 [ico-travis]: https://img.shields.io/travis/middlewares/https/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/g/middlewares/https.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/middlewares/https.svg?style=flat-square
-[ico-sensiolabs]: https://img.shields.io/sensiolabs/i/36786f5a-2a15-4399-8817-8f24fcd8c0b4.svg?style=flat-square
+[ico-sensiolabs]: https://img.shields.io/sensiolabs/i/763e4b16-798b-4c40-ae8a-da1698caae62.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/middlewares/https
 [link-travis]: https://travis-ci.org/middlewares/https
 [link-scrutinizer]: https://scrutinizer-ci.com/g/middlewares/https
 [link-downloads]: https://packagist.org/packages/middlewares/https
-[link-sensiolabs]: https://insight.sensiolabs.com/projects/36786f5a-2a15-4399-8817-8f24fcd8c0b4
+[link-sensiolabs]: https://insight.sensiolabs.com/projects/763e4b16-798b-4c40-ae8a-da1698caae62
