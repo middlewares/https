@@ -3,9 +3,10 @@
 namespace Middlewares\Tests;
 
 use Middlewares\Https;
-use Zend\Diactoros\Request;
+use Middlewares\Utils\Dispatcher;
+use Middlewares\Utils\CallableMiddleware;
+use Zend\Diactoros\ServerRequest;
 use Zend\Diactoros\Response;
-use mindplay\middleman\Dispatcher;
 
 class HttpsTest extends \PHPUnit_Framework_TestCase
 {
@@ -25,10 +26,10 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     {
         $response = (new Dispatcher([
             (new Https())->includeSubdomains($includeSubdomains),
-            function () {
+            new CallableMiddleware(function () {
                 return new Response();
-            },
-        ]))->dispatch(new Request($uri));
+            }),
+        ]))->dispatch(new ServerRequest([], [], $uri));
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertEquals($status, $response->getStatusCode());
@@ -40,7 +41,7 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     {
         $response = (new Dispatcher([
             (new Https())->includeSubdomains(false),
-        ]))->dispatch(new Request('http://domain.com:80'));
+        ]))->dispatch(new ServerRequest([], [], 'http://domain.com:80'));
 
         $expectedLocation = 'https://domain.com';
         $location = $response->getHeaderLine('Location');
@@ -49,16 +50,16 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckHttpsForward()
     {
-        $request = (new Request('http://domain.com:80'))
+        $request = (new ServerRequest([], [], 'http://domain.com:80'))
             ->withHeader('X-Forwarded-Proto', 'https');
 
         $response = (new Dispatcher([
             (new Https())
                 ->includeSubdomains(false)
                 ->checkHttpsForward(true),
-            function () {
+            new CallableMiddleware(function () {
                 return new Response();
-            },
+            }),
         ]))->dispatch($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -81,10 +82,10 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     {
         $response = (new Dispatcher([
             (new Https())->includeSubdomains(false),
-            function ($request) use ($uri) {
+            new CallableMiddleware(function ($request) use ($uri) {
                 return (new Response())->withStatus(301)->withHeader('Location', $uri);
-            },
-        ]))->dispatch(new Request('https://domain.com'));
+            }),
+        ]))->dispatch(new ServerRequest([], [], 'https://domain.com'));
 
         $this->assertEquals($expected, $response->getHeaderLine('Location'));
     }

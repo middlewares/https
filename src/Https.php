@@ -2,13 +2,13 @@
 
 namespace Middlewares;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
-use Interop\Http\Middleware\MiddlewareInterface;
+use Interop\Http\Middleware\ServerMiddlewareInterface;
 use Interop\Http\Middleware\DelegateInterface;
 
-class Https implements MiddlewareInterface
+class Https implements ServerMiddlewareInterface
 {
     const HEADER = 'Strict-Transport-Security';
 
@@ -74,12 +74,12 @@ class Https implements MiddlewareInterface
     /**
      * Process a request and return a response.
      *
-     * @param RequestInterface  $request
-     * @param DelegateInterface $delegate
+     * @param ServerRequestInterface $request
+     * @param DelegateInterface      $delegate
      *
      * @return ResponseInterface
      */
-    public function process(RequestInterface $request, DelegateInterface $delegate)
+    public function process(ServerRequestInterface $request, DelegateInterface $delegate)
     {
         $uri = $request->getUri();
 
@@ -114,11 +114,11 @@ class Https implements MiddlewareInterface
     /**
      * Check whether the request must be redirected or not.
      *
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      *
      * @return bool
      */
-    private function mustRedirect(RequestInterface $request)
+    private function mustRedirect(ServerRequestInterface $request)
     {
         return !$this->checkHttpsForward || (
             $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
