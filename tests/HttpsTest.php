@@ -24,9 +24,9 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     {
         $request = Factory::createServerRequest([], 'GET', $uri);
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new Https())->includeSubdomains($includeSubdomains),
-        ]))->dispatch($request);
+        ], $request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertEquals($status, $response->getStatusCode());
@@ -38,9 +38,9 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     {
         $request = Factory::createServerRequest([], 'GET', 'http://domain.com:80');
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new Https())->includeSubdomains(false),
-        ]))->dispatch($request);
+        ], $request);
 
         $expectedLocation = 'https://domain.com';
         $location = $response->getHeaderLine('Location');
@@ -52,11 +52,11 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
         $request = Factory::createServerRequest([], 'GET', 'http://domain.com:80')
             ->withHeader('X-Forwarded-Proto', 'https');
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new Https())
                 ->includeSubdomains(false)
                 ->checkHttpsForward(true),
-        ]))->dispatch($request);
+        ], $request);
 
         $this->assertEquals(200, $response->getStatusCode());
     }
@@ -78,12 +78,12 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     {
         $request = Factory::createServerRequest([], 'GET', 'https://domain.com');
 
-        $response = (new Dispatcher([
+        $response = Dispatcher::run([
             (new Https())->includeSubdomains(false),
             function ($request) use ($uri) {
                 return Factory::createResponse(301)->withHeader('Location', $uri);
             },
-        ]))->dispatch($request);
+        ], $request);
 
         $this->assertEquals($expected, $response->getHeaderLine('Location'));
     }
