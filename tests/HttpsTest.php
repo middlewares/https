@@ -4,9 +4,7 @@ namespace Middlewares\Tests;
 
 use Middlewares\Https;
 use Middlewares\Utils\Dispatcher;
-use Middlewares\Utils\CallableMiddleware;
-use Zend\Diactoros\ServerRequest;
-use Zend\Diactoros\Response;
+use Middlewares\Utils\Factory;
 
 class HttpsTest extends \PHPUnit_Framework_TestCase
 {
@@ -24,12 +22,11 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
      */
     public function testHttps($uri, $includeSubdomains, $status, $location, $hsts)
     {
+        $request = Factory::createServerRequest([], 'GET', $uri);
+
         $response = (new Dispatcher([
             (new Https())->includeSubdomains($includeSubdomains),
-            new CallableMiddleware(function () {
-                return new Response();
-            }),
-        ]))->dispatch(new ServerRequest([], [], $uri));
+        ]))->dispatch($request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertEquals($status, $response->getStatusCode());
@@ -39,9 +36,11 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
 
     public function testRedirectSchemeMatchesPort()
     {
+        $request = Factory::createServerRequest([], 'GET', 'http://domain.com:80');
+
         $response = (new Dispatcher([
             (new Https())->includeSubdomains(false),
-        ]))->dispatch(new ServerRequest([], [], 'http://domain.com:80'));
+        ]))->dispatch($request);
 
         $expectedLocation = 'https://domain.com';
         $location = $response->getHeaderLine('Location');
@@ -50,16 +49,13 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckHttpsForward()
     {
-        $request = (new ServerRequest([], [], 'http://domain.com:80'))
+        $request = Factory::createServerRequest([], 'GET', 'http://domain.com:80')
             ->withHeader('X-Forwarded-Proto', 'https');
 
         $response = (new Dispatcher([
             (new Https())
                 ->includeSubdomains(false)
                 ->checkHttpsForward(true),
-            new CallableMiddleware(function () {
-                return new Response();
-            }),
         ]))->dispatch($request);
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -80,12 +76,14 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
      */
     public function testRedirectScheme($uri, $expected)
     {
+        $request = Factory::createServerRequest([], 'GET', 'https://domain.com');
+
         $response = (new Dispatcher([
             (new Https())->includeSubdomains(false),
-            new CallableMiddleware(function ($request) use ($uri) {
-                return (new Response())->withStatus(301)->withHeader('Location', $uri);
-            }),
-        ]))->dispatch(new ServerRequest([], [], 'https://domain.com'));
+            function ($request) use ($uri) {
+                return Factory::createResponse(301)->withHeader('Location', $uri);
+            },
+        ]))->dispatch($request);
 
         $this->assertEquals($expected, $response->getHeaderLine('Location'));
     }
