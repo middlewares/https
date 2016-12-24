@@ -5,10 +5,10 @@ namespace Middlewares;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
-use Interop\Http\Middleware\ServerMiddlewareInterface;
-use Interop\Http\Middleware\DelegateInterface;
+use Interop\Http\ServerMiddleware\MiddlewareInterface;
+use Interop\Http\ServerMiddleware\DelegateInterface;
 
-class Https implements ServerMiddlewareInterface
+class Https implements MiddlewareInterface
 {
     const HEADER = 'Strict-Transport-Security';
 
