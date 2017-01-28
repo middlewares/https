@@ -18,6 +18,11 @@ class Https implements MiddlewareInterface
     private $maxAge = 31536000;
 
     /**
+     * @param bool Whether add the preload directive or not
+     */
+    private $preload = false;
+
+    /**
      * @param bool Whether include subdomains
      */
     private $includeSubdomains = false;
@@ -51,6 +56,20 @@ class Https implements MiddlewareInterface
     public function includeSubdomains($includeSubdomains = true)
     {
         $this->includeSubdomains = $includeSubdomains;
+
+        return $this;
+    }
+
+    /**
+     * Configure the preload HSTS directive.
+     *
+     * @param bool $preload
+     *
+     * @return self
+     */
+    public function preload($preload = true)
+    {
+        $this->preload = $preload;
 
         return $this;
     }
@@ -95,7 +114,12 @@ class Https implements MiddlewareInterface
         $response = $delegate->process($request);
 
         if (!empty($this->maxAge)) {
-            $header = sprintf('max-age=%d%s', $this->maxAge, $this->includeSubdomains ? ';includeSubDomains' : '');
+            $header = sprintf(
+                'max-age=%d%s%s',
+                $this->maxAge,
+                $this->includeSubdomains ? ';includeSubDomains' : '',
+                $this->preload ? ';preload' : ''
+            );
             $response = $response
                 ->withHeader(self::HEADER, $header);
         }

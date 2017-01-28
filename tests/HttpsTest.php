@@ -11,21 +11,25 @@ class HttpsTest extends \PHPUnit_Framework_TestCase
     public function httpsProvider()
     {
         return [
-            ['http://localhost', true, 301, 'https://localhost', ''],
-            ['https://localhost', false, 200, '', 'max-age=31536000'],
-            ['https://localhost', true, 200, '', 'max-age=31536000;includeSubDomains'],
+            ['http://localhost', true, false, 301, 'https://localhost', ''],
+            ['https://localhost', false, false, 200, '', 'max-age=31536000'],
+            ['https://localhost', false, true, 200, '', 'max-age=31536000;preload'],
+            ['https://localhost', true, false, 200, '', 'max-age=31536000;includeSubDomains'],
+            ['https://localhost', true, true, 200, '', 'max-age=31536000;includeSubDomains;preload'],
         ];
     }
 
     /**
      * @dataProvider httpsProvider
      */
-    public function testHttps($uri, $includeSubdomains, $status, $location, $hsts)
+    public function testHttps($uri, $includeSubdomains, $preload, $status, $location, $hsts)
     {
         $request = Factory::createServerRequest([], 'GET', $uri);
 
         $response = Dispatcher::run([
-            (new Https())->includeSubdomains($includeSubdomains),
+            (new Https())
+                ->preload($preload)
+                ->includeSubdomains($includeSubdomains),
         ], $request);
 
         $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);

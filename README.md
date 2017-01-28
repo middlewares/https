@@ -38,11 +38,15 @@ $response = $dispatcher->dispatch(new ServerRequest());
 
 #### `maxAge(int $maxAge)`
 
-`max-age` directive for the `Strict-Transport-Security` header. By default is `31536000 (1 year).
+`max-age` directive for the `Strict-Transport-Security` header. By default is `31536000` (1 year).
 
 #### `includeSubdomains(bool $includeSubdomains = true)`
 
-Set `true` to add the `includeSubDomains` attribute to the `Strict-Transport-Security` header (`false` by default)
+Set `true` to add the `includeSubDomains` directive to the `Strict-Transport-Security` header (`false` by default)
+
+#### `preload(bool $preload = true)`
+
+Set `true` to add the `preload` directive to the `Strict-Transport-Security` header (`false` by default)
 
 #### `checkHttpsForward(bool $checkHttpsForward = true)`
 
