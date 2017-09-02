@@ -2,10 +2,10 @@
 
 namespace Middlewares\Tests;
 
-use PHPUnit\Framework\TestCase;
 use Middlewares\Https;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
+use PHPUnit\Framework\TestCase;
 
 class HttpsTest extends TestCase
 {
@@ -22,6 +22,12 @@ class HttpsTest extends TestCase
 
     /**
      * @dataProvider httpsProvider
+     * @param mixed $uri
+     * @param mixed $includeSubdomains
+     * @param mixed $preload
+     * @param mixed $status
+     * @param mixed $location
+     * @param mixed $hsts
      */
     public function testHttps($uri, $includeSubdomains, $preload, $status, $location, $hsts)
     {
@@ -78,6 +84,8 @@ class HttpsTest extends TestCase
 
     /**
      * @dataProvider redirectionProvider
+     * @param mixed $uri
+     * @param mixed $expected
      */
     public function testRedirectScheme($uri, $expected)
     {
