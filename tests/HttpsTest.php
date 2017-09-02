@@ -2,11 +2,12 @@
 
 namespace Middlewares\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Middlewares\Https;
 use Middlewares\Utils\Dispatcher;
 use Middlewares\Utils\Factory;
 
-class HttpsTest extends \PHPUnit_Framework_TestCase
+class HttpsTest extends TestCase
 {
     public function httpsProvider()
     {
