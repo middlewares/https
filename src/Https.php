@@ -36,7 +36,7 @@ class Https implements MiddlewareInterface
     /**
      * Configure the max-age HSTS in seconds.
      */
-    public function maxAge(ing $maxAge): self
+    public function maxAge(int $maxAge): self
     {
         $this->maxAge = $maxAge;
 
