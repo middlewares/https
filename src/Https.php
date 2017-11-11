@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares;
 
@@ -34,12 +35,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Configure the max-age HSTS in seconds.
-     *
-     * @param int $maxAge
-     *
-     * @return self
      */
-    public function maxAge($maxAge)
+    public function maxAge(ing $maxAge): self
     {
         $this->maxAge = $maxAge;
 
@@ -48,12 +45,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Configure the includeSubDomains HSTS directive.
-     *
-     * @param bool $includeSubdomains
-     *
-     * @return self
      */
-    public function includeSubdomains($includeSubdomains = true)
+    public function includeSubdomains(bool $includeSubdomains = true): self
     {
         $this->includeSubdomains = $includeSubdomains;
 
@@ -62,12 +55,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Configure the preload HSTS directive.
-     *
-     * @param bool $preload
-     *
-     * @return self
      */
-    public function preload($preload = true)
+    public function preload(bool $preload = true): self
     {
         $this->preload = $preload;
 
@@ -78,12 +67,8 @@ class Https implements MiddlewareInterface
      * Configure whether check the following headers before redirect:
      * X-Forwarded-Proto: https
      * X-Forwarded-Port: 443.
-     *
-     * @param bool $checkHttpsForward
-     *
-     * @return self
      */
-    public function checkHttpsForward($checkHttpsForward = true)
+    public function checkHttpsForward(bool $checkHttpsForward = true): self
     {
         $this->checkHttpsForward = $checkHttpsForward;
 
@@ -92,13 +77,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Process a request and return a response.
-     *
-     * @param ServerRequestInterface  $request
-     * @param RequestHandlerInterface $handler
-     *
-     * @return ResponseInterface
      */
-    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler)
+    public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
         $uri = $request->getUri();
 
@@ -137,12 +117,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Check whether the request must be redirected or not.
-     *
-     * @param ServerRequestInterface $request
-     *
-     * @return bool
      */
-    private function mustRedirect(ServerRequestInterface $request)
+    private function mustRedirect(ServerRequestInterface $request): bool
     {
         return !$this->checkHttpsForward || (
             $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
@@ -152,12 +128,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Converts a http uri to https.
-     *
-     * @param UriInterface $uri
-     *
-     * @return UriInterface
      */
-    private static function withHttps(UriInterface $uri)
+    private static function withHttps(UriInterface $uri): UriInterface
     {
         return $uri->withScheme('https')->withPort(443);
     }
