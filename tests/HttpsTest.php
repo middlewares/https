@@ -1,4 +1,5 @@
 <?php
+declare(strict_types = 1);
 
 namespace Middlewares\Tests;
 
@@ -22,15 +23,15 @@ class HttpsTest extends TestCase
 
     /**
      * @dataProvider httpsProvider
-     * @param mixed $uri
-     * @param mixed $includeSubdomains
-     * @param mixed $preload
-     * @param mixed $status
-     * @param mixed $location
-     * @param mixed $hsts
      */
-    public function testHttps($uri, $includeSubdomains, $preload, $status, $location, $hsts)
-    {
+    public function testHttps(
+        string $uri,
+        bool $includeSubdomains,
+        bool $preload,
+        int $status,
+        string $location,
+        string $hsts
+    ) {
         $request = Factory::createServerRequest([], 'GET', $uri);
 
         $response = Dispatcher::run([
@@ -39,7 +40,6 @@ class HttpsTest extends TestCase
                 ->includeSubdomains($includeSubdomains),
         ], $request);
 
-        $this->assertInstanceOf('Psr\\Http\\Message\\ResponseInterface', $response);
         $this->assertEquals($status, $response->getStatusCode());
         $this->assertEquals($location, $response->getHeaderLine('Location'));
         $this->assertEquals($hsts, $response->getHeaderLine('Strict-Transport-Security'));
@@ -84,10 +84,8 @@ class HttpsTest extends TestCase
 
     /**
      * @dataProvider redirectionProvider
-     * @param mixed $uri
-     * @param mixed $expected
      */
-    public function testRedirectScheme($uri, $expected)
+    public function testRedirectScheme(string $uri, string $expected)
     {
         $request = Factory::createServerRequest([], 'GET', 'https://domain.com');
 
@@ -99,5 +97,18 @@ class HttpsTest extends TestCase
         ], $request);
 
         $this->assertEquals($expected, $response->getHeaderLine('Location'));
+    }
+
+    public function testCustomMaxAge()
+    {
+        $response = Dispatcher::run(
+            [
+                (new Https())->maxAge(10)
+            ],
+            Factory::createServerRequest([], 'GET', 'https://domain.com')
+        );
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('max-age=10', $response->getHeaderLine('Strict-Transport-Security'));
     }
 }
