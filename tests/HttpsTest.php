@@ -103,7 +103,7 @@ class HttpsTest extends TestCase
     {
         $response = Dispatcher::run(
             [
-                (new Https())->maxAge(10)
+                (new Https())->maxAge(10),
             ],
             Factory::createServerRequest([], 'GET', 'https://domain.com')
         );
