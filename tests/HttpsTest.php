@@ -111,4 +111,33 @@ class HttpsTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('max-age=10', $response->getHeaderLine('Strict-Transport-Security'));
     }
+
+    public function testRedirect()
+    {
+        $request = Factory::createServerRequest([], 'GET', 'http://domain.com');
+
+        $response = Dispatcher::run([
+            new Https(),
+            function () {
+                return Factory::createResponse();
+            },
+        ], $request);
+
+        $this->assertEquals('https://domain.com', $response->getHeaderLine('Location'));
+    }
+
+    public function testNoRedirect()
+    {
+        $request = Factory::createServerRequest([], 'GET', 'http://domain.com');
+
+        $response = Dispatcher::run([
+            (new Https())->redirect(false),
+            function () {
+                return Factory::createResponse();
+            },
+        ], $request);
+
+        $this->assertFalse($response->hasHeader('Location'));
+        $this->assertEquals(200, $response->getStatusCode());
+    }
 }
