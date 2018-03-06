@@ -34,6 +34,11 @@ class Https implements MiddlewareInterface
     private $checkHttpsForward = false;
 
     /**
+     * @var bool Whether to redirect on headers check
+     */
+    private $redirect = true;
+
+    /**
      * Configure the max-age HSTS in seconds.
      */
     public function maxAge(int $maxAge): self
@@ -71,6 +76,16 @@ class Https implements MiddlewareInterface
     public function checkHttpsForward(bool $checkHttpsForward = true): self
     {
         $this->checkHttpsForward = $checkHttpsForward;
+
+        return $this;
+    }
+
+    /**
+     * Enabled or disable redirecting all together.
+     */
+    public function redirect(bool $redirect = true): self
+    {
+        $this->redirect = $redirect;
 
         return $this;
     }
@@ -120,6 +135,10 @@ class Https implements MiddlewareInterface
      */
     private function mustRedirect(ServerRequestInterface $request): bool
     {
+        if ($this->redirect === false) {
+            return false;
+        }
+
         return !$this->checkHttpsForward || (
             $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
             $request->getHeaderLine('X-Forwarded-Port') !== '443'

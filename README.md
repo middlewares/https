@@ -52,6 +52,10 @@ Set `true` to add the `preload` directive to the `Strict-Transport-Security` hea
 
 If it's `true` and the request contains the headers `X-Forwarded-Proto: https` or `X-Forwarded-Port: 443`, no redirection is returned. This prevent problems with Https load balancer.
 
+#### `redirect(bool $redirect = true)`
+
+Enabled (`true`) or disable (`false`) redirecting all together.
+
 ---
 
 Please see [CHANGELOG](CHANGELOG.md) for more information about recent changes and [CONTRIBUTING](CONTRIBUTING.md) for contributing details.
