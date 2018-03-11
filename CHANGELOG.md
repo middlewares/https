@@ -69,6 +69,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 First version
 
+[1.1.0]: https://github.com/middlewares/https/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/middlewares/https/compare/v0.6.0...v1.0.0
 [0.6.0]: https://github.com/middlewares/https/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/middlewares/https/compare/v0.4.0...v0.5.0
