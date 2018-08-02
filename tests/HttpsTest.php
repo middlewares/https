@@ -32,7 +32,7 @@ class HttpsTest extends TestCase
         string $location,
         string $hsts
     ) {
-        $request = Factory::createServerRequest([], 'GET', $uri);
+        $request = Factory::createServerRequest('GET', $uri);
 
         $response = Dispatcher::run([
             (new Https())
@@ -47,7 +47,7 @@ class HttpsTest extends TestCase
 
     public function testRedirectSchemeMatchesPort()
     {
-        $request = Factory::createServerRequest([], 'GET', 'http://domain.com:80');
+        $request = Factory::createServerRequest('GET', 'http://domain.com:80');
 
         $response = Dispatcher::run([
             (new Https())->includeSubdomains(false),
@@ -60,7 +60,7 @@ class HttpsTest extends TestCase
 
     public function testCheckHttpsForward()
     {
-        $request = Factory::createServerRequest([], 'GET', 'http://domain.com:80')
+        $request = Factory::createServerRequest('GET', 'http://domain.com:80')
             ->withHeader('X-Forwarded-Proto', 'https');
 
         $response = Dispatcher::run([
@@ -87,7 +87,7 @@ class HttpsTest extends TestCase
      */
     public function testRedirectScheme(string $uri, string $expected)
     {
-        $request = Factory::createServerRequest([], 'GET', 'https://domain.com');
+        $request = Factory::createServerRequest('GET', 'https://domain.com');
 
         $response = Dispatcher::run([
             (new Https())->includeSubdomains(false),
@@ -105,7 +105,7 @@ class HttpsTest extends TestCase
             [
                 (new Https())->maxAge(10),
             ],
-            Factory::createServerRequest([], 'GET', 'https://domain.com')
+            Factory::createServerRequest('GET', 'https://domain.com')
         );
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -114,7 +114,7 @@ class HttpsTest extends TestCase
 
     public function testRedirect()
     {
-        $request = Factory::createServerRequest([], 'GET', 'http://domain.com');
+        $request = Factory::createServerRequest('GET', 'http://domain.com');
 
         $response = Dispatcher::run([
             new Https(),
@@ -128,7 +128,7 @@ class HttpsTest extends TestCase
 
     public function testNoRedirect()
     {
-        $request = Factory::createServerRequest([], 'GET', 'http://domain.com');
+        $request = Factory::createServerRequest('GET', 'http://domain.com');
 
         $response = Dispatcher::run([
             (new Https())->redirect(false),
