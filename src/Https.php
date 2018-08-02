@@ -3,6 +3,8 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
+use Middlewares\Utils\Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -37,6 +39,11 @@ class Https implements MiddlewareInterface
      * @var bool Whether to redirect on headers check
      */
     private $redirect = true;
+
+    /**
+     * @var ResponseFactoryInterface
+     */
+    private $responseFactory;
 
     /**
      * Configure the max-age HSTS in seconds.
@@ -91,6 +98,16 @@ class Https implements MiddlewareInterface
     }
 
     /**
+     * Set the response factory used.
+     */
+    public function responseFactory(ResponseFactoryInterface $responseFactory): self
+    {
+        $this->responseFactory = $responseFactory;
+
+        return $this;
+    }
+
+    /**
      * Process a request and return a response.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -99,7 +116,9 @@ class Https implements MiddlewareInterface
 
         if (strtolower($uri->getScheme()) !== 'https') {
             if ($this->mustRedirect($request)) {
-                return Utils\Factory::createResponse(301)
+                $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
+
+                return $responseFactory->createResponse(301)
                     ->withHeader('Location', (string) self::withHttps($uri));
             }
 
@@ -120,10 +139,13 @@ class Https implements MiddlewareInterface
         }
 
         if ($response->hasHeader('Location')) {
-            $location = Utils\Factory::createUri($response->getHeaderLine('Location'));
+            $location = parse_url($response->getHeaderLine('Location'));
 
-            if ($location->getHost() === '' || $location->getHost() === $uri->getHost()) {
-                return $response->withHeader('Location', (string) self::withHttps($location));
+            if (empty($location['host']) || $location['host'] === $uri->getHost()) {
+                $location['scheme'] = 'https';
+                unset($location['port']);
+
+                return $response->withHeader('Location', self::unParseUrl($location));
             }
         }
 
@@ -143,6 +165,24 @@ class Https implements MiddlewareInterface
             $request->getHeaderLine('X-Forwarded-Proto') !== 'https' &&
             $request->getHeaderLine('X-Forwarded-Port') !== '443'
         );
+    }
+
+    /**
+     * Stringify a url parsed with parse_url()
+     */
+    private function unParseUrl(array $url): string
+    {
+        $scheme = isset($url['scheme']) ? $url['scheme'] . '://' : '';
+        $host = isset($url['host']) ? $url['host'] : '';
+        $port = isset($url['port']) ? ':' . $url['port'] : '';
+        $user = isset($url['user']) ? $url['user'] : '';
+        $pass = isset($url['pass']) ? ':' . $url['pass'] : '';
+        $pass = ($user || $pass) ? "$pass@" : '';
+        $path = isset($url['path']) ? $url['path'] : '';
+        $query = isset($url['query']) ? '?' . $url['query'] : '';
+        $fragment = isset($url['fragment']) ? '#' . $url['fragment'] : '';
+
+        return "{$scheme}{$user}{$pass}{$host}{$port}{$path}{$query}{$fragment}";
     }
 
     /**
