@@ -3,8 +3,7 @@ declare(strict_types = 1);
 
 namespace Middlewares;
 
-use Middlewares\Utils\Factory;
-use Psr\Http\Message\ResponseFactoryInterface;
+use Middlewares\Utils\Traits\HasResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -13,6 +12,8 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Https implements MiddlewareInterface
 {
+    use HasResponseFactory;
+
     const HEADER = 'Strict-Transport-Security';
 
     /**
@@ -39,11 +40,6 @@ class Https implements MiddlewareInterface
      * @var bool Whether to redirect on headers check
      */
     private $redirect = true;
-
-    /**
-     * @var ResponseFactoryInterface
-     */
-    private $responseFactory;
 
     /**
      * Configure the max-age HSTS in seconds.
@@ -98,16 +94,6 @@ class Https implements MiddlewareInterface
     }
 
     /**
-     * Set the response factory used.
-     */
-    public function responseFactory(ResponseFactoryInterface $responseFactory): self
-    {
-        $this->responseFactory = $responseFactory;
-
-        return $this;
-    }
-
-    /**
      * Process a request and return a response.
      */
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
@@ -116,9 +102,7 @@ class Https implements MiddlewareInterface
 
         if (strtolower($uri->getScheme()) !== 'https') {
             if ($this->mustRedirect($request)) {
-                $responseFactory = $this->responseFactory ?: Factory::getResponseFactory();
-
-                return $responseFactory->createResponse(301)
+                return $this->createResponse(301)
                     ->withHeader('Location', (string) self::withHttps($uri));
             }
 
