@@ -58,7 +58,7 @@ Enabled (`true`) or disable (`false`) redirecting all together.
 
 #### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
 
-A PSR-17 factory to create the redirect responses.
+A PSR-17 factory to create the redirect response.
 
 ---
 
