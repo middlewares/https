@@ -17,22 +17,22 @@ class Https implements MiddlewareInterface
     const HEADER = 'Strict-Transport-Security';
 
     /**
-     * @param int One year by default
+     * @var int One year by default
      */
     private $maxAge = 31536000;
 
     /**
-     * @param bool Whether add the preload directive or not
+     * @var bool Whether add the preload directive or not
      */
     private $preload = false;
 
     /**
-     * @param bool Whether include subdomains
+     * @var bool Whether include subdomains
      */
     private $includeSubdomains = false;
 
     /**
-     * @param bool Whether check the headers "X-Forwarded-Proto: https" or "X-Forwarded-Port: 443"
+     * @var bool Whether check the headers "X-Forwarded-Proto: https" or "X-Forwarded-Port: 443"
      */
     private $checkHttpsForward = false;
 
