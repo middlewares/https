@@ -4,6 +4,8 @@ declare(strict_types = 1);
 namespace Middlewares;
 
 use Middlewares\Utils\Traits\HasResponseFactory;
+use Middlewares\Utils\Factory;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriInterface;
@@ -40,6 +42,11 @@ class Https implements MiddlewareInterface
      * @var bool Whether to redirect on headers check
      */
     private $redirect = true;
+
+    public function __construct(ResponseFactoryInterface $responseFactory = null)
+    {
+        $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
+    }
 
     /**
      * Configure the max-age HSTS in seconds.
