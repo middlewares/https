@@ -5,20 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/) 
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.3.0] - 2018-10-23
 
-### Fixed
+### Added
 
-- Use `phpstan` as a dev dependency to detect bugs
-- Fixed incorrect redirect #4
+- Added `responseFactory` option to `__construct`
 
 ### Deprecated
 
 - `responseFactory()` option as a method. Use the contructor argument instead.
 
-### Added
+### Fixed
 
-- Added `responseFactory` option to `__construct`
+- Use `phpstan` as a dev dependency to detect bugs
+- Fixed incorrect redirect [#4]
 
 ## [1.2.0] - 2018-08-04
 
@@ -91,7 +91,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 First version
 
-[Unreleased]: https://github.com/middlewares/https/compare/v1.2.0...HEAD
+[#4]: https://github.com/middlewares/https/issues/4
+
+[1.3.0]: https://github.com/middlewares/https/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/middlewares/https/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/middlewares/https/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/middlewares/https/compare/v0.6.0...v1.0.0
