@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Use `phpstan` as a dev dependency to detect bugs
+- Fixed incorrect redirect #4
+
+### Deprecated
+
+- `responseFactory()` option as a method. Use the contructor argument instead.
 
 ### Added
 

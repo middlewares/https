@@ -126,6 +126,20 @@ class HttpsTest extends TestCase
         $this->assertEquals('https://domain.com', $response->getHeaderLine('Location'));
     }
 
+    public function testRedirectPath()
+    {
+        $request = Factory::createServerRequest('GET', 'https://domain.com');
+
+        $response = Dispatcher::run([
+            new Https(),
+            function () {
+                return Factory::createResponse()->withHeader('Location', '/path');
+            },
+        ], $request);
+
+        $this->assertEquals('/path', $response->getHeaderLine('Location'));
+    }
+
     public function testNoRedirect()
     {
         $request = Factory::createServerRequest('GET', 'http://domain.com');

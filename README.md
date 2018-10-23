@@ -34,31 +34,53 @@ $dispatcher = new Dispatcher([
 $response = $dispatcher->dispatch(new ServerRequest());
 ```
 
-## Options
+## API
 
-#### `maxAge(int $maxAge)`
+### `__construct`
 
-`max-age` directive for the `Strict-Transport-Security` header. By default is `31536000` (1 year).
+Type | Required | Description
+-----|----------|------------
+`Psr\Http\Message\ResponseFactoryInterface` | No | A PSR-17 factory to create redirect responses. If it's not defined, use [Middleware\Utils\Factory](https://github.com/middlewares/utils#factory) to detect it automatically.
 
-#### `includeSubdomains(bool $includeSubdomains = true)`
+### `maxAge`
 
-Set `true` to add the `includeSubDomains` directive to the `Strict-Transport-Security` header (`false` by default)
+Changes the value of `max-age` directive for the `Strict-Transport-Security` header. By default is `31536000` (1 year).
 
-#### `preload(bool $preload = true)`
+Type | Required | Description
+-----|----------|------------
+`int` | Yes | The new value in seconds
 
-Set `true` to add the `preload` directive to the `Strict-Transport-Security` header (`false` by default)
+### `includeSubdomains`
 
-#### `checkHttpsForward(bool $checkHttpsForward = true)`
+By default, the `includeSubDomains` directive is not included in the `Strict-Transport-Security` header. Use this function to change this behavior.
 
-If it's `true` and the request contains the headers `X-Forwarded-Proto: https` or `X-Forwarded-Port: 443`, no redirection is returned. This prevent problems with Https load balancer.
+Type | Required | Description
+-----|----------|------------
+`bool` | No | `true` to include the directive, `false` to don't. By default is `true`.
 
-#### `redirect(bool $redirect = true)`
+### `preload`
 
-Enabled (`true`) or disable (`false`) redirecting all together.
+By default, the `preload` directive is not included in the `Strict-Transport-Security` header. Use this function to change this behavior.
 
-#### `responseFactory(Psr\Http\Message\ResponseFactoryInterface $responseFactory)`
+Type | Required | Description
+-----|----------|------------
+`bool` | No | `true` to include the directive, `false` to don't. By default is `true`.
 
-A PSR-17 factory to create the redirect response.
+### `checkHttpsForward`
+
+Enabling this option ignore requests containing the header `X-Forwarded-Proto: https` or `X-Forwarded-Port: 443`. This is specially useful if the site is behind a https load balancer.
+
+Type | Required | Description
+-----|----------|------------
+`bool` | No | `true` to enable this behavior, `false` to don't. By default is `true`.
+
+### `redirect`
+
+This option returns a redirection response from `http` to `https`. It's enabled by default.
+
+Type | Required | Description
+-----|----------|------------
+`bool` | No | `true` to enable redirections, `false` to don't. By default is `true`.
 
 ---
 
