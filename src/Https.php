@@ -132,7 +132,7 @@ class Https implements MiddlewareInterface
         if ($response->hasHeader('Location')) {
             $location = parse_url($response->getHeaderLine('Location'));
 
-            if (empty($location['host']) || $location['host'] === $uri->getHost()) {
+            if (!empty($location['host']) && $location['host'] === $uri->getHost()) {
                 $location['scheme'] = 'https';
                 unset($location['port']);
 
