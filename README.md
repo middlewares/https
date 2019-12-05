@@ -5,13 +5,12 @@
 [![Build Status][ico-travis]][link-travis]
 [![Quality Score][ico-scrutinizer]][link-scrutinizer]
 [![Total Downloads][ico-downloads]][link-downloads]
-[![SensioLabs Insight][ico-sensiolabs]][link-sensiolabs]
 
 Middleware to redirect to `https` if the request is `http` and add the [Strict Transport Security](https://en.wikipedia.org/wiki/HTTP_Strict_Transport_Security) header to protect against protocol downgrade attacks and cookie hijacking.
 
 ## Requirements
 
-* PHP >= 7.0
+* PHP >= 7.2
 * A [PSR-7 http library](https://github.com/middlewares/awesome-psr15-middlewares#psr-7-implementations)
 * A [PSR-15 middleware dispatcher](https://github.com/middlewares/awesome-psr15-middlewares#dispatcher)
 
@@ -34,53 +33,62 @@ $dispatcher = new Dispatcher([
 $response = $dispatcher->dispatch(new ServerRequest());
 ```
 
-## API
+## Usage
 
-### `__construct`
+This middleware accept a `Psr\Http\Message\ResponseFactoryInterface` as a constructor argument, to create the redirect responses. If it's not defined, [Middleware\Utils\Factory](https://github.com/middlewares/utils#factory) will be used to detect it automatically.
 
-Type | Required | Description
------|----------|------------
-`Psr\Http\Message\ResponseFactoryInterface` | No | A PSR-17 factory to create redirect responses. If it's not defined, use [Middleware\Utils\Factory](https://github.com/middlewares/utils#factory) to detect it automatically.
+```php
+$responseFactory = new MyOwnResponseFactory();
 
-### `maxAge`
+//Detect the response factory automatically
+$https = new Middlewares\Https();
 
-Changes the value of `max-age` directive for the `Strict-Transport-Security` header. By default is `31536000` (1 year).
+//Use a specific factory
+$htts = new Middlewares\Https($responseFactory);
+```
 
-Type | Required | Description
------|----------|------------
-`int` | Yes | The new value in seconds
+### maxAge
 
-### `includeSubdomains`
+This option allow to define the value of `max-age` directive for the `Strict-Transport-Security` header. By default is `31536000` (1 year).
+
+```php
+$threeYears = 31536000 * 3;
+
+$https = (new Middlewares\Https())->maxAge($threeYears);
+```
+
+### includeSubdomains
 
 By default, the `includeSubDomains` directive is not included in the `Strict-Transport-Security` header. Use this function to change this behavior.
 
-Type | Required | Description
------|----------|------------
-`bool` | No | `true` to include the directive, `false` to don't. By default is `true`.
+```php
+$https = (new Middlewares\Https())->includeSubdomains();
+```
 
-### `preload`
+### preload
 
 By default, the `preload` directive is not included in the `Strict-Transport-Security` header. Use this function to change this behavior.
 
-Type | Required | Description
------|----------|------------
-`bool` | No | `true` to include the directive, `false` to don't. By default is `true`.
+```php
+$https = (new Middlewares\Https())->preload();
+```
 
-### `checkHttpsForward`
+### checkHttpsForward
 
 Enabling this option ignore requests containing the header `X-Forwarded-Proto: https` or `X-Forwarded-Port: 443`. This is specially useful if the site is behind a https load balancer.
 
-Type | Required | Description
------|----------|------------
-`bool` | No | `true` to enable this behavior, `false` to don't. By default is `true`.
+```php
+$https = (new Middlewares\Https())->checkHttpsForward();
+```
 
-### `redirect`
+### redirect
 
 This option returns a redirection response from `http` to `https`. It's enabled by default.
 
-Type | Required | Description
------|----------|------------
-`bool` | No | `true` to enable redirections, `false` to don't. By default is `true`.
+```php
+//Disable redirections
+$https = (new Middlewares\Https())->redirect(false);
+```
 
 ---
 
@@ -93,10 +101,8 @@ The MIT License (MIT). Please see [LICENSE](LICENSE) for more information.
 [ico-travis]: https://img.shields.io/travis/middlewares/https/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/g/middlewares/https.svg?style=flat-square
 [ico-downloads]: https://img.shields.io/packagist/dt/middlewares/https.svg?style=flat-square
-[ico-sensiolabs]: https://img.shields.io/sensiolabs/i/763e4b16-798b-4c40-ae8a-da1698caae62.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/middlewares/https
 [link-travis]: https://travis-ci.org/middlewares/https
 [link-scrutinizer]: https://scrutinizer-ci.com/g/middlewares/https
 [link-downloads]: https://packagist.org/packages/middlewares/https
-[link-sensiolabs]: https://insight.sensiolabs.com/projects/763e4b16-798b-4c40-ae8a-da1698caae62

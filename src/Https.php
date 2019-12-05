@@ -4,7 +4,6 @@ declare(strict_types = 1);
 namespace Middlewares;
 
 use Middlewares\Utils\Factory;
-use Middlewares\Utils\Traits\HasResponseFactory;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,8 +13,6 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Https implements MiddlewareInterface
 {
-    use HasResponseFactory;
-
     const HEADER = 'Strict-Transport-Security';
 
     /**
@@ -42,6 +39,11 @@ class Https implements MiddlewareInterface
      * @var bool Whether to redirect on headers check
      */
     private $redirect = true;
+
+    /**
+     * @var ResponseFactoryInterface
+     */
+    private $responseFactory;
 
     public function __construct(ResponseFactoryInterface $responseFactory = null)
     {
@@ -109,7 +111,7 @@ class Https implements MiddlewareInterface
 
         if (strtolower($uri->getScheme()) !== 'https') {
             if ($this->mustRedirect($request)) {
-                return $this->createResponse(301)
+                return $this->responseFactory->createResponse(301)
                     ->withHeader('Location', (string) self::withHttps($uri));
             }
 
@@ -164,12 +166,12 @@ class Https implements MiddlewareInterface
     private function unParseUrl(array $url): string
     {
         $scheme = isset($url['scheme']) ? $url['scheme'] . '://' : '';
-        $host = isset($url['host']) ? $url['host'] : '';
+        $host = $url['host'] ?? '';
         $port = isset($url['port']) ? ':' . $url['port'] : '';
-        $user = isset($url['user']) ? $url['user'] : '';
+        $user = $url['user'] ?? '';
         $pass = isset($url['pass']) ? ':' . $url['pass'] : '';
         $pass = ($user || $pass) ? "$pass@" : '';
-        $path = isset($url['path']) ? $url['path'] : '';
+        $path = $url['path'] ?? '';
         $query = isset($url['query']) ? '?' . $url['query'] : '';
         $fragment = isset($url['fragment']) ? '#' . $url['fragment'] : '';
 
