@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 class Https implements MiddlewareInterface
 {
-    const HEADER = 'Strict-Transport-Security';
+    public const HEADER = 'Strict-Transport-Security';
 
     /**
      * @var int One year by default
@@ -45,7 +45,7 @@ class Https implements MiddlewareInterface
      */
     private $responseFactory;
 
-    public function __construct(ResponseFactoryInterface $responseFactory = null)
+    public function __construct(?ResponseFactoryInterface $responseFactory = null)
     {
         $this->responseFactory = $responseFactory ?: Factory::getResponseFactory();
     }
@@ -162,6 +162,8 @@ class Https implements MiddlewareInterface
 
     /**
      * Stringify a url parsed with parse_url()
+     *
+     * @param array<string, string> $url
      */
     private function unParseUrl(array $url): string
     {
