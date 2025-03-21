@@ -10,7 +10,10 @@ use PHPUnit\Framework\TestCase;
 
 class HttpsTest extends TestCase
 {
-    public function httpsProvider()
+    /**
+     * @return array<array<string|bool|int>>
+     */
+    public function httpsProvider(): array
     {
         return [
             ['http://localhost', true, false, 301, 'https://localhost', ''],
@@ -31,7 +34,7 @@ class HttpsTest extends TestCase
         int $status,
         string $location,
         string $hsts
-    ) {
+    ): void {
         $request = Factory::createServerRequest('GET', $uri);
 
         $response = Dispatcher::run([
@@ -45,7 +48,7 @@ class HttpsTest extends TestCase
         $this->assertEquals($hsts, $response->getHeaderLine('Strict-Transport-Security'));
     }
 
-    public function testRedirectSchemeMatchesPort()
+    public function testRedirectSchemeMatchesPort(): void
     {
         $request = Factory::createServerRequest('GET', 'http://domain.com:80');
 
@@ -58,7 +61,7 @@ class HttpsTest extends TestCase
         $this->assertEquals($expectedLocation, $location);
     }
 
-    public function testCheckHttpsForward()
+    public function testCheckHttpsForward(): void
     {
         $request = Factory::createServerRequest('GET', 'http://domain.com:80')
             ->withHeader('X-Forwarded-Proto', 'https');
@@ -72,7 +75,10 @@ class HttpsTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
     }
 
-    public function redirectionProvider()
+    /**
+     * @return array<array<string>>
+     */
+    public function redirectionProvider(): array
     {
         return [
             ['http://domain.com/index', 'https://domain.com/index'],
@@ -85,7 +91,7 @@ class HttpsTest extends TestCase
     /**
      * @dataProvider redirectionProvider
      */
-    public function testRedirectScheme(string $uri, string $expected)
+    public function testRedirectScheme(string $uri, string $expected): void
     {
         $request = Factory::createServerRequest('GET', 'https://domain.com');
 
@@ -99,7 +105,7 @@ class HttpsTest extends TestCase
         $this->assertEquals($expected, $response->getHeaderLine('Location'));
     }
 
-    public function testCustomMaxAge()
+    public function testCustomMaxAge(): void
     {
         $response = Dispatcher::run(
             [
@@ -112,7 +118,7 @@ class HttpsTest extends TestCase
         $this->assertEquals('max-age=10', $response->getHeaderLine('Strict-Transport-Security'));
     }
 
-    public function testRedirect()
+    public function testRedirect(): void
     {
         $request = Factory::createServerRequest('GET', 'http://domain.com');
 
@@ -126,7 +132,7 @@ class HttpsTest extends TestCase
         $this->assertEquals('https://domain.com', $response->getHeaderLine('Location'));
     }
 
-    public function testRedirectPath()
+    public function testRedirectPath(): void
     {
         $request = Factory::createServerRequest('GET', 'https://domain.com');
 
@@ -140,7 +146,7 @@ class HttpsTest extends TestCase
         $this->assertEquals('/path', $response->getHeaderLine('Location'));
     }
 
-    public function testNoRedirect()
+    public function testNoRedirect(): void
     {
         $request = Factory::createServerRequest('GET', 'http://domain.com');
 
